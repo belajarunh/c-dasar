@@ -1,0 +1,2238 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>C# Code Challenge - Basic Programming Practical Examination</title>
+  
+  <!-- Google Fonts: Inter (UI) & JetBrains Mono (Code) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Bootstrap 5 & Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  
+  <!-- SheetJS (xlsx) for Genuine Excel Export & Bootstrap 5 Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <style>
+    :root {
+      --primary-navy: #0f172a;
+      --secondary-navy: #1e293b;
+      --accent-blue: #2563eb;
+      --accent-blue-hover: #1d4ed8;
+      --editor-bg: #181824;
+      --editor-sidebar: #13131c;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --success-green: #10b981;
+      --danger-red: #ef4444;
+      --warning-amber: #f59e0b;
+      --border-color: #334155;
+    }
+
+    * {
+      box-sizing: border-box;
+      transition: background-color 0.15s ease, border-color 0.15s ease;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #f1f5f9;
+      color: #0f172a;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    .font-mono {
+      font-family: 'JetBrains Mono', monospace !important;
+    }
+
+    /* Navbar styling */
+    .app-navbar {
+      background: var(--primary-navy);
+      border-bottom: 1px solid var(--border-color);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    /* Views visibility */
+    .view-section {
+      display: none;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 0.25s ease-out, transform 0.25s ease-out;
+    }
+    .view-section.active {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Professional Card */
+    .custom-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    /* IDE Coding Workspace */
+    .ide-container {
+      background: var(--editor-bg);
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #2d3748;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .ide-header {
+      background: var(--editor-sidebar);
+      padding: 8px 16px;
+      border-bottom: 1px solid #2d3748;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #cbd5e1;
+      font-size: 0.85rem;
+    }
+
+    .ide-dots {
+      display: flex;
+      gap: 6px;
+    }
+    .ide-dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .ide-dot-red { background: #ff5f56; }
+    .ide-dot-yellow { background: #ffbd2e; }
+    .ide-dot-green { background: #27c93f; }
+
+    .ide-body {
+      display: flex;
+      min-height: 230px;
+      position: relative;
+    }
+
+    .ide-line-numbers {
+      background: var(--editor-sidebar);
+      color: #64748b;
+      padding: 12px 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.95rem;
+      text-align: right;
+      user-select: none;
+      line-height: 1.6;
+      border-right: 1px solid #262f3d;
+      min-width: 44px;
+    }
+
+    .ide-editor-area {
+      flex: 1;
+      position: relative;
+      background: var(--editor-bg);
+    }
+
+    .ide-textarea {
+      width: 100%;
+      height: 100%;
+      min-height: 230px;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #e2e8f0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1rem;
+      line-height: 1.6;
+      padding: 12px 16px;
+      resize: vertical;
+      tab-size: 4;
+      caret-color: #38bdf8;
+    }
+
+    /* Question details panel */
+    .question-panel {
+      background: #ffffff;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+      padding: 24px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Timer Widget */
+    .timer-widget {
+      padding: 8px 18px;
+      border-radius: 9999px;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.15rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #e2e8f0;
+      color: #1e293b;
+      border: 2px solid #cbd5e1;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .timer-warning {
+      background: #fef3c7 !important;
+      color: #b45309 !important;
+      border-color: #f59e0b !important;
+      animation: pulse-slow 1s infinite alternate;
+    }
+
+    .timer-critical {
+      background: #fee2e2 !important;
+      color: #b91c1c !important;
+      border-color: #ef4444 !important;
+      animation: pulse-fast 0.5s infinite alternate;
+    }
+
+    @keyframes pulse-slow {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.03); }
+    }
+    @keyframes pulse-fast {
+      0% { transform: scale(1); filter: brightness(1); }
+      100% { transform: scale(1.05); filter: brightness(1.15); }
+    }
+
+    /* Progress bar */
+    .custom-progress {
+      height: 8px;
+      border-radius: 6px;
+      background-color: #e2e8f0;
+      overflow: hidden;
+    }
+
+    /* Badge indicators */
+    .badge-soft-primary { background-color: #dbeafe; color: #1e40af; }
+    .badge-soft-success { background-color: #d1fae5; color: #065f46; }
+    .badge-soft-danger { background-color: #fee2e2; color: #991b1b; }
+    .badge-soft-warning { background-color: #fef3c7; color: #92400e; }
+
+    /* Custom Notification Modal */
+    .app-toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 1080;
+    }
+
+    /* Scrollable custom table */
+    .table-responsive {
+      border-radius: 10px;
+      border: 1px solid #e2e8f0;
+      background: #fff;
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar navbar-dark app-navbar py-2 px-3 sticky-top">
+    <div class="container-fluid d-flex justify-content-between align-items-center">
+      <a class="navbar-brand d-flex align-items-center gap-2 m-0" href="#" onclick="app.navigate('landing'); return false;">
+        <span class="d-inline-flex align-items-center justify-content-center bg-primary text-white rounded p-1" style="width: 32px; height: 32px;">
+          <i class="bi bi-braces fs-5"></i>
+        </span>
+        <div>
+          <div class="fw-bold tracking-tight text-white lh-1">C# Code Challenge</div>
+          <small class="text-secondary font-monospace" style="font-size: 0.72rem;">Basic Programming Practical Exam</small>
+        </div>
+      </a>
+
+      <!-- Quick Actions Header -->
+      <div class="d-flex align-items-center gap-2">
+        <span class="badge bg-success-subtle text-success border border-success d-none d-md-inline-flex align-items-center gap-1 font-mono small py-1 px-2" title="Koneksi Database MySQL Aktif">
+          <i class="bi bi-database-check"></i> MySQL: ujianbahasa_c
+        </span>
+        <button id="navLeaderboardBtn" class="btn btn-outline-light btn-sm d-flex align-items-center gap-1" onclick="app.navigate('leaderboard')">
+          <i class="bi bi-trophy-fill text-warning"></i>
+          <span class="d-none d-sm-inline">Leaderboard</span>
+        </button>
+        <button id="navAdminBtn" class="btn btn-dark btn-sm border-secondary text-secondary d-flex align-items-center gap-1" onclick="app.navigate('admin')">
+          <i class="bi bi-shield-lock"></i>
+          <span class="d-none d-sm-inline">Panel Dosen</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="flex-grow-1 py-4">
+    <div class="container">
+
+      <!-- ================= 1. LANDING PAGE ================= -->
+      <section id="view-landing" class="view-section active">
+        <div class="row justify-content-center">
+          <div class="col-lg-10 col-xl-9">
+            
+            <!-- Hero Banner -->
+            <div class="custom-card p-4 p-md-5 mb-4 text-center text-md-start position-relative overflow-hidden" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #fff;">
+              <div class="row align-items-center">
+                <div class="col-md-8 z-1">
+                  <span class="badge bg-primary px-3 py-2 mb-3 rounded-pill">
+                    <i class="bi bi-mortarboard-fill me-1"></i> Ujian Praktik Pemrograman C# Dasar
+                  </span>
+                  <h1 class="display-6 fw-bold mb-3 text-white">Uji Penguasaan Sintaks & Logika C# Anda</h1>
+                  <p class="lead text-light opacity-75 mb-4 fs-6">
+                    Platform evaluasi interaktif terstruktur berbasis tantangan kode nyata. Buktikan pemahaman fondasi C# Anda melalui 20 butir soal deterministik terukur dengan timer langsung.
+                  </p>
+                  <div class="d-flex flex-wrap gap-3 justify-content-center justify-content-md-start">
+                    <button class="btn btn-primary btn-lg px-4 shadow d-flex align-items-center gap-2" onclick="app.openIdentityModal()">
+                      <i class="bi bi-play-circle-fill fs-5"></i> Mulai Ujian Sekarang
+                    </button>
+                    <button class="btn btn-outline-light btn-lg px-4 d-flex align-items-center gap-2" onclick="app.navigate('leaderboard')">
+                      <i class="bi bi-bar-chart-line-fill"></i> Peringkat Kelas
+                    </button>
+                  </div>
+                </div>
+                <div class="col-md-4 text-center mt-4 mt-md-0 z-1 d-none d-md-block">
+                  <div class="p-3 bg-dark bg-opacity-50 rounded-3 border border-secondary text-start font-mono text-light" style="font-size: 0.8rem;">
+                    <div class="text-secondary mb-1">// Target Penilaian</div>
+                    <div class="text-info">Console<span class="text-white">.</span><span class="text-warning">WriteLine</span><span class="text-white">("Ready!");</span></div>
+                    <div class="text-success">int <span class="text-white">skorMaksimal = </span>100;</div>
+                    <div class="text-secondary mt-1">// 60 detik / soal</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Key Parameters Cards -->
+            <div class="row g-3 mb-4 text-center">
+              <div class="col-6 col-md-3">
+                <div class="custom-card p-3 h-100">
+                  <i class="bi bi-patch-question-fill text-primary fs-2"></i>
+                  <h4 class="fw-bold mt-2 mb-0">20</h4>
+                  <small class="text-muted">Soal Kode C#</small>
+                </div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="custom-card p-3 h-100">
+                  <i class="bi bi-stopwatch text-warning fs-2"></i>
+                  <h4 class="fw-bold mt-2 mb-0">60 Detik</h4>
+                  <small class="text-muted">Alokasi per Soal</small>
+                </div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="custom-card p-3 h-100">
+                  <i class="bi bi-award-fill text-success fs-2"></i>
+                  <h4 class="fw-bold mt-2 mb-0">100 Poin</h4>
+                  <small class="text-muted">Nilai Maksimum</small>
+                </div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="custom-card p-3 h-100">
+                  <i class="bi bi-lightning-charge-fill text-danger fs-2"></i>
+                  <h4 class="fw-bold mt-2 mb-0">Otomatis</h4>
+                  <small class="text-muted">Validasi Token Presisi</small>
+                </div>
+              </div>
+            </div>
+
+            <!-- Instructions & Syllabus Content -->
+            <div class="custom-card p-4 mb-4">
+              <h5 class="fw-bold text-navy mb-3 d-flex align-items-center gap-2">
+                <i class="bi bi-journal-code text-primary"></i> Cakupan Materi Ujian
+              </h5>
+              <div class="row g-2 mb-4">
+                <div class="col-md-6">
+                  <ul class="list-group list-group-flush small">
+                    <li class="list-group-item px-0 py-2"><i class="bi bi-check2-circle text-primary me-2"></i>Output Console (WriteLine & Write)</li>
+                    <li class="list-group-item px-0 py-2"><i class="bi bi-check2-circle text-primary me-2"></i>Deklarasi Variabel & Tipe Data Primitif (int, string, double, bool)</li>
+                    <li class="list-group-item px-0 py-2"><i class="bi bi-check2-circle text-primary me-2"></i>Input Konsol & Konversi Data (Convert.ToInt32, Convert.ToDouble)</li>
+                    <li class="list-group-item px-0 py-2"><i class="bi bi-check2-circle text-primary me-2"></i>Operator Aritmatika & Tipe Casting Eksplisit</li>
+                  </ul>
+                </div>
+                <div class="col-md-6">
+                  <ul class="list-group list-group-flush small">
+                    <li class="list-group-item px-0 py-2"><i class="bi bi-check2-circle text-primary me-2"></i>Operator Relasional / Perbandingan Logika</li>
+                    <li class="list-group-item px-0 py-2"><i class="bi bi-check2-circle text-primary me-2"></i>Struktur Percabangan (if, else)</li>
+                    <li class="list-group-item px-0 py-2"><i class="bi bi-check2-circle text-primary me-2"></i>Struktur Kontrol Perulangan (for, while)</li>
+                    <li class="list-group-item px-0 py-2"><i class="bi bi-check2-circle text-primary me-2"></i>Sintaks Entry Point Standard Method Main</li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- Critical Rules Alert -->
+              <div class="alert alert-warning border-0 d-flex gap-3 align-items-start mb-0">
+                <i class="bi bi-exclamation-triangle-fill fs-4 text-warning flex-shrink-0"></i>
+                <div class="small">
+                  <strong>PENTING — Karakteristik Evaluator C#:</strong>
+                  <ul class="mb-0 mt-1 ps-3">
+                    <li>Bahasa C# bersifat <strong>case-sensitive</strong>. Perhatikan penulisan huruf besar dan kecil seperti <code>Console.WriteLine</code>, bukan <code>console.writeline</code>.</li>
+                    <li>Sistem tidak menoleransi salah ketik pada kata kunci (keyword), identifier, maupun nama method bawaan C#.</li>
+                    <li>Spasi horizontal dan indentasi kode yang wajar akan ditoleransi secara otomatis oleh token engine.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 2. MODAL IDENTITAS MAHASISWA ================= -->
+      <div class="modal fade" id="identityModal" tabindex="-1" aria-labelledby="identityModalLabel" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-dark text-white border-0 py-3">
+              <h5 class="modal-title fw-bold fs-6 d-flex align-items-center gap-2" id="identityModalLabel">
+                <i class="bi bi-person-badge text-primary"></i> Data Peserta Ujian
+              </h5>
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Tutup"></button>
+            </div>
+            <div class="modal-body p-4">
+              <p class="small text-muted mb-3">Lengkapi identitas akademik Anda dengan benar. Data ini akan dicatat permanen dalam lembar penilaian dan leaderboard.</p>
+              
+              <form id="identityForm" onsubmit="event.preventDefault(); app.startExamSession();">
+                <div class="mb-3">
+                  <label for="studentName" class="form-label small fw-semibold">Nama Lengkap Mahasiswa <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control" id="studentName" placeholder="Contoh: Budi Santoso" required autocomplete="name">
+                  <div class="invalid-feedback">Nama lengkap wajib diisi.</div>
+                </div>
+
+                <div class="mb-3">
+                  <label for="studentNim" class="form-label small fw-semibold">Nomor Induk Mahasiswa (NIM) <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control font-mono" id="studentNim" placeholder="Contoh: 230101089" required autocomplete="off">
+                  <div class="invalid-feedback">NIM tidak boleh kosong atau sudah pernah mengikuti ujian.</div>
+                </div>
+
+                <div class="mb-3">
+                  <label for="studentClass" class="form-label small fw-semibold">Pilih Kelas <span class="text-danger">*</span></label>
+                  <select class="form-select font-mono" id="studentClass" required>
+                    <option value="" selected disabled>-- Pilih Kelas --</option>
+                    <option value="TI-A">TI-A</option>
+                    <option value="TI-B">TI-B</option>
+                    <option value="TI-C">TI-C</option>
+                  </select>
+                  <div class="invalid-feedback">Silakan pilih kelas Anda (TI-A, TI-B, atau TI-C).</div>
+                </div>
+
+                <div class="p-3 bg-light rounded-3 small border mb-3">
+                  <div class="fw-semibold text-dark mb-1"><i class="bi bi-shield-check text-success me-1"></i> Komitmen Kejujuran:</div>
+                  <div class="text-muted">Setelah menekan tombol di bawah, timer 60 detik untuk Soal #1 akan langsung berjalan. Pergantian soal terjadi otomatis saat waktu habis.</div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2">
+                  <button type="button" class="btn btn-light" data-bs-dismiss="modal">Kembali</button>
+                  <button type="submit" class="btn btn-primary px-4 fw-semibold d-flex align-items-center gap-2">
+                    <i class="bi bi-check2-circle"></i> Mulai Ujian Sekarang
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= 3. EXAM ACTIVE WORKSPACE ================= -->
+      <section id="view-exam" class="view-section">
+        <!-- Exam Live Sticky Bar -->
+        <div class="custom-card p-3 mb-3 bg-white border">
+          <div class="row align-items-center g-2">
+            <div class="col-md-5">
+              <div class="d-flex align-items-center gap-3">
+                <span class="badge bg-dark font-mono px-3 py-2 fs-6" id="examQuestionBadge">Soal 01 / 20</span>
+                <div>
+                  <div class="fw-bold text-dark lh-1" id="examStudentName">Mahasiswa</div>
+                  <small class="text-muted font-mono" id="examStudentMeta">NIM: - | Kelas: -</small>
+                </div>
+              </div>
+            </div>
+
+            <!-- Progress Meter -->
+            <div class="col-md-4">
+              <div class="d-flex justify-content-between small text-muted mb-1">
+                <span>Progress Ujian</span>
+                <span id="examProgressText" class="fw-semibold">1 / 20</span>
+              </div>
+              <div class="custom-progress">
+                <div id="examProgressBar" class="progress-bar bg-primary" role="progressbar" style="width: 5%;"></div>
+              </div>
+            </div>
+
+            <!-- Live Countdown Timer -->
+            <div class="col-md-3 text-md-end text-center">
+              <div id="timerContainer" class="timer-widget">
+                <i class="bi bi-stopwatch-fill"></i>
+                <span id="timerDisplay">01:00</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Question & Editor Layout -->
+        <div class="row g-3">
+          <!-- Left Panel: Question Specification -->
+          <div class="col-lg-5">
+            <div class="question-panel h-100 d-flex flex-direction-column justify-content-between">
+              <div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <span class="badge badge-soft-primary px-3 py-1 rounded-pill" id="qCategory">Variabel & Tipe Data</span>
+                  <span class="badge bg-light text-dark border font-mono small" id="qPoints">+5 Poin</span>
+                </div>
+
+                <h5 class="fw-bold text-dark mb-2" id="qTitle">Pertanyaan Pemrograman</h5>
+                <p class="text-secondary small mb-3" id="qInstruction">Instruksi spesifik pengerjaan kode C#.</p>
+
+                <div class="p-3 bg-light rounded-3 border mb-3">
+                  <div class="small fw-semibold text-muted text-uppercase mb-1" style="font-size: 0.72rem; letter-spacing: 0.05em;">Deskripsi Soal:</div>
+                  <div class="text-dark fw-medium" id="qDescription" style="white-space: pre-wrap;">-</div>
+                </div>
+
+                <div id="qContextBox" class="p-3 bg-light rounded-3 border mb-3 d-none">
+                  <div class="small fw-semibold text-muted text-uppercase mb-1" style="font-size: 0.72rem;">Konteks / Variabel Terkait:</div>
+                  <div class="font-mono small text-dark" id="qContextText">int a = 10; int b = 5;</div>
+                </div>
+              </div>
+
+              <!-- Question Footer Indicators -->
+              <div class="pt-3 border-top mt-3">
+                <div class="d-flex align-items-center justify-content-between">
+                  <span class="badge bg-secondary-subtle text-secondary" id="qStatusIndicator">
+                    <i class="bi bi-pencil me-1"></i> Sedang Menjawab
+                  </span>
+                  <small class="text-muted font-mono" style="font-size: 0.75rem;">Otomatis lock saat 00:00</small>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Panel: Code Editor (VS Code Styled) -->
+          <div class="col-lg-7">
+            <div class="ide-container h-100">
+              <div class="ide-header">
+                <div class="d-flex align-items-center gap-2">
+                  <div class="ide-dots">
+                    <span class="ide-dot ide-dot-red"></span>
+                    <span class="ide-dot ide-dot-yellow"></span>
+                    <span class="ide-dot ide-dot-green"></span>
+                  </div>
+                  <span class="ms-2 font-mono text-muted small"><i class="bi bi-filetype-cs text-info me-1"></i>Solution.cs</span>
+                </div>
+                <div class="font-mono text-secondary small" style="font-size: 0.75rem;">C# 10.0 / .NET</div>
+              </div>
+
+              <div class="ide-body flex-grow-1">
+                <div class="ide-line-numbers" id="lineNumbers">
+                  1<br>2<br>3<br>4<br>5
+                </div>
+                <div class="ide-editor-area">
+                  <textarea id="codeEditor" class="ide-textarea" spellcheck="false" placeholder="// Ketikkan sintaks kode C# Anda di sini...
+// Perhatikan huruf besar/kecil (case-sensitive)!" oninput="app.updateLineNumbers()"></textarea>
+                </div>
+              </div>
+
+              <!-- Editor Action Bar -->
+              <div class="p-3 bg-dark border-top border-secondary d-flex flex-wrap justify-content-between align-items-center gap-2">
+                <div class="d-flex gap-2">
+                  <button type="button" class="btn btn-outline-secondary btn-sm text-light" onclick="app.clearEditor()">
+                    <i class="bi bi-eraser me-1"></i> Bersihkan
+                  </button>
+                  <button type="button" class="btn btn-outline-secondary btn-sm text-light" onclick="app.skipQuestion()">
+                    <i class="bi bi-fast-forward me-1"></i> Lewati Soal
+                  </button>
+                </div>
+
+                <div class="d-flex align-items-center gap-2">
+                  <button id="submitAnswerBtn" type="button" class="btn btn-primary px-4 fw-semibold d-flex align-items-center gap-2" onclick="app.submitCurrentAnswer()">
+                    <i class="bi bi-send-fill"></i> Simpan & Lanjut
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 4. HASIL UJIAN MAHASISWA ================= -->
+      <section id="view-result" class="view-section">
+        <div class="row justify-content-center">
+          <div class="col-lg-10 col-xl-9">
+            
+            <div class="custom-card p-4 p-md-5 text-center mb-4">
+              <div class="mb-3">
+                <span id="resultIcon" class="d-inline-flex align-items-center justify-content-center rounded-circle p-3" style="width: 80px; height: 80px;">
+                  <i class="bi bi-award-fill fs-1"></i>
+                </span>
+              </div>
+              <h3 class="fw-bold text-dark mb-1">Evaluasi Ujian Selesai</h3>
+              <p class="text-muted small mb-4">Hasil pengujian kode C# Anda telah dinilai otomatis secara deterministik.</p>
+
+              <!-- Main Score Display -->
+              <div class="py-4 my-2 rounded-4 border bg-light d-inline-block px-5 shadow-sm">
+                <span class="text-muted text-uppercase fw-semibold small font-mono d-block mb-1">NILAI AKHIR</span>
+                <h1 class="display-3 fw-bold text-primary mb-0 font-mono" id="resultFinalScore">0</h1>
+                <span class="badge px-3 py-2 mt-2 rounded-pill fs-6" id="resultGradeBadge">Memuat...</span>
+              </div>
+
+              <!-- Participant Identity Card -->
+              <div class="row justify-content-center mt-4">
+                <div class="col-md-8">
+                  <div class="table-responsive">
+                    <table class="table table-bordered mb-0 small text-start">
+                      <tbody>
+                        <tr>
+                          <td class="bg-light text-muted fw-semibold" style="width: 35%;">Nama Lengkap</td>
+                          <td class="fw-bold" id="resStudentName">-</td>
+                        </tr>
+                        <tr>
+                          <td class="bg-light text-muted fw-semibold">NIM / Kelas</td>
+                          <td class="font-mono" id="resStudentNimClass">-</td>
+                        </tr>
+                        <tr>
+                          <td class="bg-light text-muted fw-semibold">Waktu Selesai</td>
+                          <td class="font-mono text-muted" id="resTimestamp">-</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Detailed Stats Breakdown -->
+              <div class="row g-3 mt-3 text-center">
+                <div class="col-6 col-md-3">
+                  <div class="p-3 bg-light rounded-3 border">
+                    <div class="text-success fw-bold fs-4 font-mono" id="resCorrectCount">0</div>
+                    <small class="text-muted">Jawaban Benar</small>
+                  </div>
+                </div>
+                <div class="col-6 col-md-3">
+                  <div class="p-3 bg-light rounded-3 border">
+                    <div class="text-danger fw-bold fs-4 font-mono" id="resWrongCount">0</div>
+                    <small class="text-muted">Jawaban Salah</small>
+                  </div>
+                </div>
+                <div class="col-6 col-md-3">
+                  <div class="p-3 bg-light rounded-3 border">
+                    <div class="text-warning fw-bold fs-4 font-mono" id="resTimeoutCount">0</div>
+                    <small class="text-muted">Waktu Habis</small>
+                  </div>
+                </div>
+                <div class="col-6 col-md-3">
+                  <div class="p-3 bg-light rounded-3 border">
+                    <div class="text-primary fw-bold fs-4 font-mono" id="resAccuracy">0%</div>
+                    <small class="text-muted">Akurasi Soal</small>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Navigation Options -->
+              <div class="d-flex flex-wrap justify-content-center gap-3 mt-4 pt-3 border-top">
+                <button class="btn btn-outline-secondary px-4" onclick="app.navigate('landing')">
+                  <i class="bi bi-house me-1"></i> Kembali ke Beranda
+                </button>
+                <button class="btn btn-primary px-4 fw-semibold" onclick="app.navigate('leaderboard')">
+                  <i class="bi bi-trophy me-1"></i> Lihat Peringkat Kelas
+                </button>
+              </div>
+            </div>
+
+            <!-- Review Section (Controlled by Admin toggle) -->
+            <div id="reviewContainer" class="custom-card p-4 d-none">
+              <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
+                <i class="bi bi-list-check text-primary"></i> Rekapitulasi Butir Soal & Jawaban
+              </h5>
+              <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 small" id="reviewTable">
+                  <thead class="table-light">
+                    <tr>
+                      <th style="width: 50px;">#</th>
+                      <th>Kategori & Pertanyaan</th>
+                      <th>Kode yang Dikirim</th>
+                      <th style="width: 90px;">Status</th>
+                      <th style="width: 70px;">Poin</th>
+                    </tr>
+                  </thead>
+                  <tbody id="reviewTableBody"></tbody>
+                </table>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 5. LEADERBOARD VIEW ================= -->
+      <section id="view-leaderboard" class="view-section">
+        <div class="row justify-content-center">
+          <div class="col-12">
+            
+            <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+              <div>
+                <h4 class="fw-bold text-dark mb-1 d-flex align-items-center gap-2">
+                  <i class="bi bi-trophy-fill text-warning"></i> Leaderboard C# Code Challenge
+                </h4>
+                <p class="text-muted small mb-0">Peringkat resmi hasil pengerjaan ujian praktik pemrograman dasar.</p>
+              </div>
+
+              <div class="d-flex gap-2">
+                <button class="btn btn-success d-flex align-items-center gap-2 fw-semibold" onclick="app.exportToExcel()">
+                  <i class="bi bi-file-earmark-excel-fill"></i> Ekspor Excel (.xlsx)
+                </button>
+                <button class="btn btn-outline-dark" onclick="app.navigate('landing')">
+                  <i class="bi bi-arrow-left"></i> Beranda
+                </button>
+              </div>
+            </div>
+
+            <!-- Metric Summary Pods -->
+            <div class="row g-3 mb-4">
+              <div class="col-md-3 col-6">
+                <div class="custom-card p-3 border-start border-primary border-4">
+                  <small class="text-muted d-block">Total Peserta</small>
+                  <h4 class="fw-bold mb-0 font-mono text-dark" id="leadTotalCount">0</h4>
+                </div>
+              </div>
+              <div class="col-md-3 col-6">
+                <div class="custom-card p-3 border-start border-success border-4">
+                  <small class="text-muted d-block">Nilai Tertinggi</small>
+                  <h4 class="fw-bold mb-0 font-mono text-success" id="leadHighScore">0</h4>
+                </div>
+              </div>
+              <div class="col-md-3 col-6">
+                <div class="custom-card p-3 border-start border-info border-4">
+                  <small class="text-muted d-block">Nilai Rata-rata</small>
+                  <h4 class="fw-bold mb-0 font-mono text-info" id="leadAvgScore">0</h4>
+                </div>
+              </div>
+              <div class="col-md-3 col-6">
+                <div class="custom-card p-3 border-start border-danger border-4">
+                  <small class="text-muted d-block">Nilai Terendah</small>
+                  <h4 class="fw-bold mb-0 font-mono text-danger" id="leadLowScore">0</h4>
+                </div>
+              </div>
+            </div>
+
+            <!-- Filter Bar -->
+            <div class="custom-card p-3 mb-3">
+              <div class="row g-2">
+                <div class="col-md-5">
+                  <div class="input-group">
+                    <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
+                    <input type="text" class="form-control" id="leadSearchInput" placeholder="Cari berdasarkan nama atau NIM..." oninput="app.renderLeaderboardTable()">
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <select class="form-select fw-semibold" id="leadClassFilter" onchange="app.renderLeaderboardTable()">
+                    <option value="">Semua Kelas (TI-A, TI-B, TI-C)</option>
+                    <option value="TI-A">Kelas TI-A</option>
+                    <option value="TI-B">Kelas TI-B</option>
+                    <option value="TI-C">Kelas TI-C</option>
+                  </select>
+                </div>
+                <div class="col-md-4 text-md-end text-muted small d-flex align-items-center justify-content-md-end">
+                  <span>* Pengurutan: Nilai tertinggi &rarr; Durasi tercepat</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Leaderboard Table -->
+            <div class="custom-card overflow-hidden">
+              <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 font-sans" id="mainLeaderboardTable">
+                  <thead class="table-dark">
+                    <tr>
+                      <th class="text-center" style="width: 70px;">Rank</th>
+                      <th>Nama Lengkap</th>
+                      <th class="font-mono">NIM</th>
+                      <th>Kelas</th>
+                      <th class="text-center font-mono">Nilai</th>
+                      <th class="text-center text-success">Benar</th>
+                      <th class="text-center text-danger">Salah</th>
+                      <th class="text-center text-warning">Waktu Habis</th>
+                      <th class="font-mono text-end">Waktu Selesai</th>
+                    </tr>
+                  </thead>
+                  <tbody id="leaderboardTbody">
+                    <!-- Populated via Javascript -->
+                  </tbody>
+                </table>
+              </div>
+              <div id="leaderboardEmptyState" class="p-5 text-center text-muted d-none">
+                <i class="bi bi-folder2-open fs-1 d-block mb-2 text-secondary"></i>
+                Belum ada data ujian yang terekam di sistem.
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 6. DOSEN / ADMIN PANEL ================= -->
+      <section id="view-admin" class="view-section">
+        <div class="row justify-content-center">
+          <div class="col-12 col-xl-11">
+            
+            <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+              <div>
+                <h4 class="fw-bold text-dark mb-0 d-flex align-items-center gap-2">
+                  <i class="bi bi-shield-lock-fill text-primary"></i> Dashboard Dosen & Pengaturan Ujian
+                </h4>
+                <span class="badge bg-warning text-dark font-mono small">Development & Testing Mode</span>
+              </div>
+              <button class="btn btn-outline-dark" onclick="app.navigate('landing')">
+                <i class="bi bi-arrow-left"></i> Kembali ke Beranda
+              </button>
+            </div>
+
+            <div class="alert alert-success small border-0 mb-4 d-flex align-items-center gap-3">
+              <i class="bi bi-database-check fs-4 text-success flex-shrink-0"></i>
+              <div>
+                <strong>Database MySQL Terhubung Aktif:</strong> Seluruh data identitas mahasiswa (Kelas TI-A, TI-B, TI-C), perolehan nilai, serta rincian kode jawaban per butir soal tersimpan secara terpusat di database <code>ujianbahasa_c</code> (localhost).
+              </div>
+            </div>
+
+            <div class="row g-4">
+              <!-- Left: Exam Controls -->
+              <div class="col-lg-5">
+                <div class="custom-card p-4 mb-4">
+                  <h6 class="fw-bold mb-3"><i class="bi bi-sliders me-1"></i> Parameter Konfigurasi Ujian</h6>
+                  
+                  <div class="mb-3">
+                    <label class="form-label small fw-semibold">Nama Kegiatan Ujian</label>
+                    <input type="text" class="form-control" id="cfgExamTitle" value="Ujian Praktik Pemrograman C# Dasar">
+                  </div>
+
+                  <div class="row g-2 mb-3">
+                    <div class="col-6">
+                      <label class="form-label small fw-semibold">Durasi per Soal (Detik)</label>
+                      <input type="number" class="form-control font-mono" id="cfgTimerSec" value="60" min="5" max="300">
+                    </div>
+                    <div class="col-6">
+                      <label class="form-label small fw-semibold">Poin per Jawaban Benar</label>
+                      <input type="number" class="form-control font-mono" id="cfgPointsPerQ" value="5" min="1" max="50">
+                    </div>
+                  </div>
+
+                  <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" id="cfgAllowReview" checked>
+                    <label class="form-check-label small" for="cfgAllowReview">Izinkan Mahasiswa Melihat Kunci Jawaban Pasca-Ujian</label>
+                  </div>
+
+                  <div class="form-check form-switch mb-4">
+                    <input class="form-check-input" type="checkbox" id="cfgStrictNimCheck" checked>
+                    <label class="form-check-label small" for="cfgStrictNimCheck">Cegah Pengulangan Ujian dengan NIM yang Sama</label>
+                  </div>
+
+                  <div class="d-grid gap-2">
+                    <button class="btn btn-primary" onclick="app.saveAdminConfig()">
+                      <i class="bi bi-floppy-fill me-1"></i> Simpan Konfigurasi
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Danger Zone -->
+                <div class="custom-card p-4 border-danger">
+                  <h6 class="fw-bold text-danger mb-3"><i class="bi bi-trash3-fill me-1"></i> Manajemen Data Peserta</h6>
+                  <p class="small text-muted mb-3">Menghapus seluruh riwayat pengerjaan, skor ujian, dan leaderboard yang tersimpan di memori browser.</p>
+                  
+                  <div class="d-flex gap-2">
+                    <button class="btn btn-outline-danger btn-sm" onclick="app.resetAllData()">
+                      <i class="bi bi-trash"></i> Hapus Seluruh Data Ujian
+                    </button>
+                    <button class="btn btn-outline-secondary btn-sm" onclick="app.seedDemoData()">
+                      <i class="bi bi-database-fill-add"></i> Muat Data Sampel
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right: Question Bank & Validator Verification Tool -->
+              <div class="col-lg-7">
+                <div class="custom-card p-4 h-100">
+                  <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="fw-bold mb-0"><i class="bi bi-shield-check me-1"></i> Pengujian Mandiri Validator Soal</h6>
+                    <span class="badge bg-dark font-mono">20 Soal Terdaftar</span>
+                  </div>
+
+                  <p class="small text-muted mb-3">Gunakan alat ini untuk menguji bagaimana evaluator memeriksa kapitalisasi kode secara deterministik tanpa harus menjalankan ujian penuh.</p>
+
+                  <div class="mb-3">
+                    <label class="form-label small fw-semibold">Pilih Butir Soal untuk Diuji:</label>
+                    <select class="form-select font-mono small" id="testQuestionSelect" onchange="app.loadQuestionForTesting()">
+                      <!-- Populated via script -->
+                    </select>
+                  </div>
+
+                  <div class="p-3 bg-light rounded-3 border mb-3 small">
+                    <div class="fw-bold text-dark" id="testQuestionText">-</div>
+                    <div class="mt-1 text-muted"><strong>Acuan:</strong> <code id="testReferenceCode" class="text-success font-mono">-</code></div>
+                  </div>
+
+                  <div class="mb-3">
+                    <label class="form-label small fw-semibold">Masukkan Kode Uji Coba:</label>
+                    <input type="text" class="form-control font-mono" id="testInputCode" placeholder="Ketik kode di sini...">
+                  </div>
+
+                  <div class="d-flex gap-2 mb-3">
+                    <button class="btn btn-dark btn-sm" onclick="app.executeValidatorTest()">
+                      <i class="bi bi-play-fill"></i> Jalankan Validator
+                    </button>
+                    <button class="btn btn-light btn-sm border" onclick="app.setTestInputReference()">
+                      Salin Jawaban Acuan
+                    </button>
+                    <button class="btn btn-light btn-sm border text-danger" onclick="app.setTestInputWrongCase()">
+                      Uji Salah Kapitalisasi
+                    </button>
+                  </div>
+
+                  <div id="testResultBox" class="p-3 rounded-3 border d-none small font-mono">
+                    <!-- Populated dynamically -->
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <div class="app-toast-container">
+    <div id="appToast" class="toast align-items-center text-white bg-dark border-0 shadow" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body d-flex align-items-center gap-2" id="toastMessage">
+          <i class="bi bi-info-circle-fill text-info"></i> Notifikasi
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Tutup"></button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /**
+     * C# CODE CHALLENGE - PRODUCTION CORE ENGINE
+     * Self-contained client-side architecture with deterministic token validator
+     */
+
+    // Storage Keys
+    const STORAGE_KEY_RESULTS = 'csharp_challenge_results_v1';
+    const STORAGE_KEY_SESSION = 'csharp_challenge_session_v1';
+    const STORAGE_KEY_CONFIG = 'csharp_challenge_config_v1';
+
+    // 20 Full C# Programming Questions Bank
+    const QUESTION_BANK = [
+      {
+        id: 1,
+        category: "Output Dasar",
+        difficulty: "Mudah",
+        title: "Menampilkan Teks ke Layar",
+        instruction: "Tuliskan perintah C# untuk menampilkan teks Hello World ke console (dengan baris baru).",
+        description: 'Tuliskan perintah lengkap menggunakan Console.WriteLine untuk mencetak string "Hello World".',
+        context: null,
+        referenceAnswer: 'Console.WriteLine("Hello World");',
+        points: 5,
+        validator: function(input) {
+          if (!input) return false;
+          // Match Console.WriteLine (case-sensitive) with optional spaces around parenthesis & semicolon
+          const clean = input.trim();
+          const regex = /^Console\.WriteLine\s*\(\s*"Hello World"\s*\)\s*;?$/;
+          return regex.test(clean);
+        }
+      },
+      {
+        id: 2,
+        category: "Output Dasar",
+        difficulty: "Mudah",
+        title: "Output Tanpa Baris Baru",
+        instruction: "Tuliskan perintah untuk menampilkan teks Halo tanpa berpindah baris.",
+        description: 'Gunakan method Console.Write dengan argumen string "Halo".',
+        context: null,
+        referenceAnswer: 'Console.Write("Halo");',
+        points: 5,
+        validator: function(input) {
+          if (!input) return false;
+          const clean = input.trim();
+          const regex = /^Console\.Write\s*\(\s*"Halo"\s*\)\s*;?$/;
+          return regex.test(clean);
+        }
+      },
+      {
+        id: 3,
+        category: "Variabel & Tipe Data",
+        difficulty: "Mudah",
+        title: "Deklarasi Integer",
+        instruction: "Buat variabel bertipe int bernama umur dengan nilai 20.",
+        description: "Deklarasikan variabel integer bernama umur dan inisialisasi nilainya dengan 20.",
+        context: null,
+        referenceAnswer: 'int umur = 20;',
+        points: 5,
+        validator: function(input) {
+          if (!input) return false;
+          const clean = input.trim();
+          const regex = /^int\s+umur\s*=\s*20\s*;?$/;
+          return regex.test(clean);
+        }
+      },
+      {
+        id: 4,
+        category: "Variabel & Tipe Data",
+        difficulty: "Mudah",
+        title: "Deklarasi String",
+        instruction: 'Buat variabel string bernama nama dengan nilai "Budi".',
+        description: 'Deklarasikan variabel string dengan identifier nama yang memuat teks "Budi".',
+        context: null,
+        referenceAnswer: 'string nama = "Budi";',
+        points: 5,
+        validator: function(input) {
+          if (!input) return false;
+          const clean = input.trim();
+          const regex = /^(string|String)\s+nama\s*=\s*"Budi"\s*;?$/;
+          return regex.test(clean);
+        }
+      },
+      {
+        id: 5,
+        category: "Variabel & Tipe Data",
+        difficulty: "Mudah",
+        title: "Deklarasi Double",
+        instruction: "Buat variabel double bernama tinggi dengan nilai 170.5.",
+        description: "Deklarasikan tipe presisi ganda double bernama tinggi dengan nilai pecahan 170.5.",
+        context: null,
+        referenceAnswer: 'double tinggi = 170.5;',
+        points: 5,
+        validator: function(input) {
+          if (!input) return false;
+          const clean = input.trim();
+          const regex = /^(double|Double)\s+tinggi\s*=\s*170\.5\s*;?$/;
+          return regex.test(clean);
+        }
+      },
+      {
+        id: 6,
+        category: "Variabel & Tipe Data",
+        difficulty: "Mudah",
+        title: "Deklarasi Boolean",
+        instruction: "Buat variabel bool bernama aktif dengan nilai true.",
+        description: "Buat variabel logika bool bernama aktif dengan nilai literal true (huruf kecil).",
+        context: null,
+        referenceAnswer: 'bool aktif = true;',
+        points: 5,
+        validator: function(input) {
+          if (!input) return false;
+          const clean = input.trim();
+          const regex = /^(bool|Boolean)\s+aktif\s*=\s*true\s*;?$/;
+          return regex.test(clean);
+        }
+      },
+      {
+        id: 7,
+        category: "Input Konsol",
+        difficulty: "Sedang",
+        title: "Membaca Input String",
+        instruction: "Tuliskan perintah untuk membaca satu baris input dari console dan menyimpannya ke variabel nama.",
+        description: "Gunakan Console.ReadLine() dan simpan ke variabel string nama yang baru dideklarasikan.",
+        context: null,
+        referenceAnswer: 'string nama = Console.ReadLine();',
+        points: 5,
+        validator: function(input) {
+          if (!input) return false;
+          const clean = input.trim();
+          const regex = /^(string|var)\s+nama\s*=\s*Console\.ReadLine\s*\(\s*\)\s*;?$/;
+          return regex.test(clean);
+        }
+      },
+      {
+        id: 8,
+        category: "Konversi Tipe Data",
+        difficulty: "Sedang",
+        title: "Konversi Input ke Integer",
+        instruction: "Konversikan input console menjadi integer dan simpan dalam variabel umur.",
+        description: "Gunakan class Convert.ToInt32 bersamaan dengan Console.ReadLine() ke variabel int umur.",
+        context: null,
+        referenceAnswer: 'int umur = Convert.ToInt32(Console.ReadLine());',
+        points: 5,
+        validator: function(input) {
+          if (!input) return false;
+          const clean = input.trim();
+          // Checks Convert.ToInt32 & Console.ReadLine case-sensitively
+          const regex = /^(int|var)\s+umur\s*=\s*Convert\.ToInt32\s*\(\s*Console\.ReadLine\s*\(\s*\)\s*\)\s*;?$/;
+          const regexParse = /^(int|var)\s+umur\s*=\s*int\.Parse\s*\(\s*Console\.ReadLine\s*\(\s*\)\s*\)\s*;?$/;
+          return regex.test(clean) || regexParse.test(clean);
+        }
+      },
+      {
+        id: 9,
+        category: "Konversi Tipe Data",
+        difficulty: "Sedang",
+        title: "Konversi Input ke Double",
+        instruction: "Konversikan input console menjadi double dan simpan dalam variabel nilai.",
+        description: "Konversikan teks dari Console.ReadLine() menjadi double dan assign ke variabel double nilai.",
+        context: null,
+        referenceAnswer: 'double nilai = Convert.ToDouble(Console.ReadLine());',
+        points: 5,
+        validator: function(input) {
+          if (!input) return false;
+          const clean = input.trim();
+          const regex = /^(double|var)\s+nilai\s*=\s*Convert\.ToDouble\s*\(\s*Console\.ReadLine\s*\(\s*\)\s*\)\s*;?$/;
+          const regexParse = /^(double|var)\s+nilai\s*=\s*double\.Parse\s*\(\s*Console\.ReadLine\s*\(\s*\)\s*\)\s*;?$/;
+          return regex.test(clean) || regexParse.test(clean);
+        }
+      },
+      {
+        id: 10,
+        category: "Operator Aritmatika",
+        difficulty: "Mudah",
+        title: "Penjumlahan",
+        instruction: "Buat variabel hasil yang menyimpan hasil penjumlahan a dan b, keduanya bertipe int.",
+        description: "Asumsikan variabel a dan b telah ada. Tulis baris deklarasi int hasil yang menjumlahkan a dan b.",
+        context: "int a = 10; int b = 5;",
+        referenceAnswer: 'int hasil = a + b;',
+        points: 5,
+        validator: function(input) {
+          if (!input) return false;
+          const clean = input.trim();
+          const regex = /^(int|var)\s+hasil\s*=\s*(\ba\s*\+\s*b\b|\bb\s*\+\s*a\b)\s*;?$/;
+          return regex.test(clean);
+        }
+      },
+      {
+        id: 11,
+        category: "Operator Aritmatika",
+        difficulty: "Mudah",
+        title: "Pengurangan",
+        instruction: "Buat variabel hasil yang menyimpan hasil pengurangan b dari a.",
+        description: "Buat deklarasi int hasil yang menghitung nilai a dikurangi b.",
+        context: "int a = 20; int b = 7;",
+        referenceAnswer: 'int hasil = a - b;',
+        points: 5,
+        validator: function(input) {
+          if (!input) return false;
+          const clean = input.trim();
+          const regex = /^(int|var)\s+hasil\s*=\s*a\s*-\s*b\s*;?$/;
+          return regex.test(clean);
+        }
+      },
+      {
+        id: 12,
+        category: "Operator Aritmatika",
+        difficulty: "Mudah",
+        title: "Perkalian",
+        instruction: "Buat variabel hasil yang menyimpan hasil perkalian a dengan b.",
+        description: "Buat deklarasi int hasil yang mengalikan variabel a dan b menggunakan operator *.",
+        context: "int a = 6; int b = 8;",
+        referenceAnswer: 'int hasil = a * b;',
+        points: 5,
+        validator: function(input) {
+          if (!input) return false;
+          const clean = input.trim();
+          const regex = /^(int|var)\s+hasil\s*=\s*(\ba\s*\*\s*b\b|\bb\s*\*\s*a\b)\s*;?$/;
+          return regex.test(clean);
+        }
+      },
+      {
+        id: 13,
+        category: "Tipe Casting & Aritmatika",
+        difficulty: "Sedang",
+        title: "Pembagian dengan Type Casting",
+        instruction: "Buat variabel hasil yang menyimpan hasil pembagian a dengan b menggunakan tipe double.",
+        description: "Lakukan casting eksplisit agar pembagian bulat terhindar: double hasil = (double)a / b;",
+        context: "int a = 7; int b = 2;",
+        referenceAnswer: 'double hasil = (double)a / b;',
+        points: 5,
+        validator: function(input) {
+          if (!input) return false;
+          const clean = input.trim();
+          // Accepts (double)a / b or (double)a / (double)b or a / (double)b
+          const regex = /^(double|var)\s+hasil\s*=\s*(\(\s*double\s*\)\s*a\s*\/\s*b|a\s*\/\s*\(\s*double\s*\)\s*b|\(\s*double\s*\)\s*a\s*\/\s*\(\s*double\s*\)\s*b)\s*;?$/;
+          return regex.test(clean);
+        }
+      },
+      {
+        id: 14,
+        category: "Operator Perbandingan",
+        difficulty: "Mudah",
+        title: "Perbandingan Relasional",
+        instruction: "Buat ekspresi boolean yang memeriksa apakah umur lebih besar atau sama dengan 18.",
+        description: "Tuliskan ekspresi relasionalnya saja: umur >= 18 (tanpa if dan tanpa titik koma).",
+        context: "int umur = 19;",
+        referenceAnswer: 'umur >= 18',
+        points: 5,
+        validator: function(input) {
+          if (!input) return false;
+          const clean = input.trim().replace(/;$/, '');
+          const regex = /^umur\s*>=\s*18$/;
+          return regex.test(clean);
+        }
+      },
+      {
+        id: 15,
+        category: "Struktur Percabangan",
+        difficulty: "Mudah",
+        title: "Percabangan If",
+        instruction: "Tuliskan pernyataan if yang memeriksa apakah nilai lebih besar dari 75.",
+        description: "Tuliskan header pernyataan if: if (nilai > 75)",
+        context: "int nilai = 80;",
+        referenceAnswer: 'if (nilai > 75)',
+        points: 5,
+        validator: function(input) {
+          if (!input) return false;
+          const clean = input.trim().replace(/;$/, '');
+          const regex = /^if\s*\(\s*nilai\s*>\s*75\s*\)$/;
+          return regex.test(clean);
+        }
+      },
+      {
+        id: 16,
+        category: "Struktur Percabangan",
+        difficulty: "Mudah",
+        title: "Percabangan Else",
+        instruction: "Tuliskan keyword yang digunakan untuk menangani kondisi alternatif ketika blok if tidak terpenuhi.",
+        description: "Ketikkan kata kunci bahasa C# yang dimaksud (huruf kecil).",
+        context: null,
+        referenceAnswer: 'else',
+        points: 5,
+        validator: function(input) {
+          if (!input) return false;
+          const clean = input.trim();
+          return clean === "else" || clean === "else {" || clean === "else{}";
+        }
+      },
+      {
+        id: 17,
+        category: "Perulangan",
+        difficulty: "Sedang",
+        title: "Perulangan For",
+        instruction: "Tuliskan header for yang mengulang variabel i dari 0 sampai kurang dari 5 dengan kenaikan satu.",
+        description: "Tuliskan satu baris lengkap header for: for (int i = 0; i < 5; i++)",
+        context: null,
+        referenceAnswer: 'for (int i = 0; i < 5; i++)',
+        points: 5,
+        validator: function(input) {
+          if (!input) return false;
+          const clean = input.trim().replace(/;$/, '');
+          const regex = /^for\s*\(\s*int\s+i\s*=\s*0\s*;\s*i\s*<\s*5\s*;\s*(i\+\+|\+\+i|i\s*\+=\s*1)\s*\)$/;
+          return regex.test(clean);
+        }
+      },
+      {
+        id: 18,
+        category: "Perulangan",
+        difficulty: "Mudah",
+        title: "Perulangan While",
+        instruction: "Tuliskan header while yang berjalan selama i kurang dari 10.",
+        description: "Tuliskan header perulangan while: while (i < 10)",
+        context: "int i = 0;",
+        referenceAnswer: 'while (i < 10)',
+        points: 5,
+        validator: function(input) {
+          if (!input) return false;
+          const clean = input.trim().replace(/;$/, '');
+          const regex = /^while\s*\(\s*i\s*<\s*10\s*\)$/;
+          return regex.test(clean);
+        }
+      },
+      {
+        id: 19,
+        category: "Struktur Program",
+        difficulty: "Sedang",
+        title: "Deklarasi Method Main",
+        instruction: "Tuliskan deklarasi method utama C# dalam bentuk modern yang digunakan pada program console konvensional.",
+        description: "Tuliskan signature method Main lengkap: static void Main(string[] args)",
+        context: null,
+        referenceAnswer: 'static void Main(string[] args)',
+        points: 5,
+        validator: function(input) {
+          if (!input) return false;
+          const clean = input.trim().replace(/;$/, '');
+          // Checks static void Main with string[] args or string [] args
+          const regex = /^static\s+void\s+Main\s*\(\s*(string|String)\s*\[\s*\]\s*args\s*\)$/;
+          return regex.test(clean);
+        }
+      },
+      {
+        id: 20,
+        category: "Output & Variabel",
+        difficulty: "Mudah",
+        title: "Menampilkan Nilai Variabel",
+        instruction: "Tuliskan perintah untuk menampilkan nilai variabel nama menggunakan Console.",
+        description: "Cetak nilai dari variabel nama ke terminal menggunakan Console.WriteLine(nama);",
+        context: 'string nama = "Citra";',
+        referenceAnswer: 'Console.WriteLine(nama);',
+        points: 5,
+        validator: function(input) {
+          if (!input) return false;
+          const clean = input.trim();
+          const regex = /^Console\.WriteLine\s*\(\s*nama\s*\)\s*;?$/;
+          return regex.test(clean);
+        }
+      }
+    ];
+
+    class ExamApp {
+      constructor() {
+        this.config = this.loadConfig();
+        this.session = null;
+        this.timerInterval = null;
+        this.identityModalInstance = null;
+      }
+
+      init() {
+        // Init Bootstrap modal
+        const modalEl = document.getElementById('identityModal');
+        if (modalEl && window.bootstrap) {
+          this.identityModalInstance = new bootstrap.Modal(modalEl);
+        }
+
+        // Check if there is an active running session
+        this.restoreActiveSession();
+        this.populateAdminQuestionSelector();
+        this.syncAdminConfigInputs();
+        this.renderLeaderboardTable();
+
+        // Keyboard handler for editor tab indentation
+        const editor = document.getElementById('codeEditor');
+        if (editor) {
+          editor.addEventListener('keydown', (e) => {
+            if (e.key === 'Tab') {
+              e.preventDefault();
+              const start = editor.selectionStart;
+              const end = editor.selectionEnd;
+              editor.value = editor.value.substring(0, start) + "    " + editor.value.substring(end);
+              editor.selectionStart = editor.selectionEnd = start + 4;
+              this.updateLineNumbers();
+            }
+          });
+        }
+      }
+
+      syncAdminConfigInputs() {
+        const titleEl = document.getElementById('cfgExamTitle');
+        const timerEl = document.getElementById('cfgTimerSec');
+        const ptsEl = document.getElementById('cfgPointsPerQ');
+        const reviewEl = document.getElementById('cfgAllowReview');
+        const strictNimEl = document.getElementById('cfgStrictNimCheck');
+
+        if (titleEl) titleEl.value = this.config.examTitle || "Ujian Praktik Pemrograman C# Dasar";
+        if (timerEl) timerEl.value = this.config.timerSec || 60;
+        if (ptsEl) ptsEl.value = this.config.pointsPerQ || 5;
+        if (reviewEl) reviewEl.checked = this.config.allowReview !== false;
+        if (strictNimEl) strictNimEl.checked = this.config.strictNimCheck !== false;
+      }
+
+      loadConfig() {
+        const stored = localStorage.getItem(STORAGE_KEY_CONFIG);
+        if (stored) {
+          try { 
+            const cfg = JSON.parse(stored); 
+            // Pastikan timer default 60 detik jika masih memakai nilai lama 30 atau 90
+            if (cfg.timerSec === 30 || cfg.timerSec === 90) {
+              cfg.timerSec = 60;
+            }
+            return cfg;
+          } catch(e){}
+        }
+        return {
+          examTitle: "Ujian Praktik Pemrograman C# Dasar",
+          timerSec: 60,
+          pointsPerQ: 5,
+          allowReview: true,
+          strictNimCheck: true
+        };
+      }
+
+      saveAdminConfig() {
+        const title = document.getElementById('cfgExamTitle').value.trim() || "Ujian Praktik Pemrograman C# Dasar";
+        const timerSec = parseInt(document.getElementById('cfgTimerSec').value) || 60;
+        const points = parseInt(document.getElementById('cfgPointsPerQ').value) || 5;
+        const allowReview = document.getElementById('cfgAllowReview').checked;
+        const strictNim = document.getElementById('cfgStrictNimCheck').checked;
+
+        this.config = {
+          examTitle: title,
+          timerSec: Math.max(5, timerSec),
+          pointsPerQ: Math.max(1, points),
+          allowReview: allowReview,
+          strictNimCheck: strictNim
+        };
+
+        localStorage.setItem(STORAGE_KEY_CONFIG, JSON.stringify(this.config));
+        this.showToast("Konfigurasi ujian berhasil disimpan!", "success");
+      }
+
+      navigate(viewId) {
+        // Prevent navigating away while exam in progress without confirmation
+        if (this.session && this.session.status === 'RUNNING' && viewId !== 'exam') {
+          const leave = window.confirm("Ujian sedang berlangsung! Jika berpindah halaman, timer akan tetap berjalan. Lanjutkan?");
+          if (!leave) return;
+        }
+
+        document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+        const target = document.getElementById(`view-${viewId}`);
+        if (target) {
+          target.classList.add('active');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        if (viewId === 'leaderboard') {
+          this.renderLeaderboardTable();
+        } else if (viewId === 'admin') {
+          this.syncAdminConfigInputs();
+        }
+      }
+
+      openIdentityModal() {
+        if (this.session && this.session.status === 'RUNNING') {
+          this.navigate('exam');
+          return;
+        }
+        if (this.identityModalInstance) {
+          this.identityModalInstance.show();
+        }
+      }
+
+      async startExamSession() {
+        const nameInput = document.getElementById('studentName');
+        const nimInput = document.getElementById('studentNim');
+        const classInput = document.getElementById('studentClass');
+
+        const nama = nameInput.value.trim();
+        const nim = nimInput.value.trim();
+        const kelas = classInput.value.trim();
+
+        if (!nama || !nim || !kelas) {
+          this.showToast("Lengkapi seluruh kolom identitas wajib (Nama, NIM, dan Pilihan Kelas)!", "danger");
+          return;
+        }
+
+        const validClasses = ['TI-A', 'TI-B', 'TI-C'];
+        if (!validClasses.includes(kelas)) {
+          this.showToast("Silakan pilih kelas yang valid: TI-A, TI-B, atau TI-C.", "danger");
+          return;
+        }
+
+        // Strict NIM Check against MySQL Database and localStorage
+        if (this.config.strictNimCheck) {
+          try {
+            const resp = await fetch(`api/api.php?action=check_nim&nim=${encodeURIComponent(nim)}`);
+            const resData = await resp.json();
+            if (resData.success && resData.data && resData.data.exists) {
+              nimInput.classList.add('is-invalid');
+              this.showToast(`NIM ${nim} telah terdaftar menyelesaikan ujian ini di database MySQL.`, "danger");
+              return;
+            }
+          } catch(e) {
+            console.warn("Pemeriksaan NIM via MySQL API gagal, memeriksa penyimpanan lokal:", e);
+            const pastResults = this.getStoredResults();
+            const alreadyTaken = pastResults.some(r => r.nim.toLowerCase() === nim.toLowerCase());
+            if (alreadyTaken) {
+              nimInput.classList.add('is-invalid');
+              this.showToast(`NIM ${nim} telah terdaftar menyelesaikan ujian ini sebelumnya.`, "danger");
+              return;
+            }
+          }
+        }
+
+        // Close modal
+        if (this.identityModalInstance) {
+          this.identityModalInstance.hide();
+        }
+
+        // Create new exam session state
+        const now = Date.now();
+        this.session = {
+          attemptId: 'att_' + now + '_' + Math.random().toString(36).substr(2, 6),
+          nama: nama,
+          nim: nim,
+          kelas: kelas,
+          startedAt: new Date().toISOString(),
+          currentIndex: 0,
+          totalQuestions: QUESTION_BANK.length,
+          deadline: now + (this.config.timerSec * 1000),
+          status: 'RUNNING',
+          answers: [] // Each item: { questionId, submittedCode, status, points, submittedAt }
+        };
+
+        this.persistActiveSession();
+        this.navigate('exam');
+        this.setupCurrentQuestion();
+      }
+
+      restoreActiveSession() {
+        const stored = localStorage.getItem(STORAGE_KEY_SESSION);
+        if (!stored) return;
+
+        try {
+          const session = JSON.parse(stored);
+          if (session && session.status === 'RUNNING') {
+            this.session = session;
+            const now = Date.now();
+
+            // Check if deadline passed while browser was closed
+            if (now >= this.session.deadline) {
+              // Mark current question as timeout and advance
+              this.handleTimeout();
+            } else {
+              this.navigate('exam');
+              this.setupCurrentQuestion();
+            }
+          }
+        } catch(e) {
+          console.error("Gagal memulihkan sesi ujian:", e);
+          localStorage.removeItem(STORAGE_KEY_SESSION);
+        }
+      }
+
+      persistActiveSession() {
+        if (!this.session) return;
+        localStorage.setItem(STORAGE_KEY_SESSION, JSON.stringify(this.session));
+      }
+
+      setupCurrentQuestion() {
+        if (!this.session) return;
+
+        clearInterval(this.timerInterval);
+        const idx = this.session.currentIndex;
+        const q = QUESTION_BANK[idx];
+
+        if (!q) {
+          this.finalizeExam();
+          return;
+        }
+
+        // Header info
+        document.getElementById('examQuestionBadge').textContent = `Soal ${String(idx + 1).padStart(2, '0')} / 20`;
+        document.getElementById('examStudentName').textContent = this.session.nama;
+        document.getElementById('examStudentMeta').textContent = `NIM: ${this.session.nim} | Kelas: ${this.session.kelas}`;
+
+        // Progress bar
+        const progressPct = ((idx + 1) / QUESTION_BANK.length) * 100;
+        document.getElementById('examProgressBar').style.width = `${progressPct}%`;
+        document.getElementById('examProgressText').textContent = `${idx + 1} / 20`;
+
+        // Question Details
+        document.getElementById('qCategory').textContent = q.category;
+        document.getElementById('qPoints').textContent = `+${this.config.pointsPerQ} Poin`;
+        document.getElementById('qTitle').textContent = `Soal #${q.id}: ${q.title}`;
+        document.getElementById('qInstruction').textContent = q.instruction;
+        document.getElementById('qDescription').textContent = q.description;
+
+        const contextBox = document.getElementById('qContextBox');
+        if (q.context) {
+          contextBox.classList.remove('d-none');
+          document.getElementById('qContextText').textContent = q.context;
+        } else {
+          contextBox.classList.add('d-none');
+        }
+
+        // Reset editor
+        const editor = document.getElementById('codeEditor');
+        editor.value = "";
+        editor.disabled = false;
+        document.getElementById('submitAnswerBtn').disabled = false;
+        this.updateLineNumbers();
+
+        // Update status badge
+        const badge = document.getElementById('qStatusIndicator');
+        badge.className = "badge bg-secondary-subtle text-secondary";
+        badge.innerHTML = '<i class="bi bi-pencil me-1"></i> Sedang Menjawab';
+
+        // Start High-Precision Timer (Deadline timestamp based)
+        this.session.deadline = Date.now() + (this.config.timerSec * 1000);
+        this.persistActiveSession();
+        this.startTimer();
+      }
+
+      startTimer() {
+        const timerDisplay = document.getElementById('timerDisplay');
+        const timerContainer = document.getElementById('timerContainer');
+
+        const tick = () => {
+          const now = Date.now();
+          const remainingMs = this.session.deadline - now;
+          const remainingSec = Math.max(0, Math.ceil(remainingMs / 1000));
+
+          // Format mm:ss
+          const mins = Math.floor(remainingSec / 60);
+          const secs = remainingSec % 60;
+          timerDisplay.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+
+          // Visual states: <=10s warning, <=5s critical
+          timerContainer.classList.remove('timer-warning', 'timer-critical');
+          if (remainingSec <= 5) {
+            timerContainer.classList.add('timer-critical');
+          } else if (remainingSec <= 10) {
+            timerContainer.classList.add('timer-warning');
+          }
+
+          if (remainingSec <= 0) {
+            clearInterval(this.timerInterval);
+            this.handleTimeout();
+          }
+        };
+
+        tick();
+        this.timerInterval = setInterval(tick, 200);
+      }
+
+      updateLineNumbers() {
+        const editor = document.getElementById('codeEditor');
+        const lineNumbers = document.getElementById('lineNumbers');
+        if (!editor || !lineNumbers) return;
+
+        const lines = editor.value.split('\n').length;
+        let lineStr = '';
+        for (let i = 1; i <= Math.max(lines, 6); i++) {
+          lineStr += i + '<br>';
+        }
+        lineNumbers.innerHTML = lineStr;
+      }
+
+      clearEditor() {
+        const editor = document.getElementById('codeEditor');
+        editor.value = '';
+        editor.focus();
+        this.updateLineNumbers();
+      }
+
+      skipQuestion() {
+        this.processAnswerSubmission('', true, false);
+      }
+
+      submitCurrentAnswer() {
+        const editor = document.getElementById('codeEditor');
+        const code = editor.value;
+        this.processAnswerSubmission(code, false, false);
+      }
+
+      handleTimeout() {
+        const editor = document.getElementById('codeEditor');
+        const currentCode = editor ? editor.value : '';
+        this.processAnswerSubmission(currentCode, false, true);
+      }
+
+      processAnswerSubmission(code, isSkipped = false, isTimeout = false) {
+        if (!this.session || this.session.status !== 'RUNNING') return;
+
+        clearInterval(this.timerInterval);
+
+        // Lock editor immediately
+        const editor = document.getElementById('codeEditor');
+        editor.disabled = true;
+        document.getElementById('submitAnswerBtn').disabled = true;
+
+        const qIndex = this.session.currentIndex;
+        const q = QUESTION_BANK[qIndex];
+        const trimmed = (code || '').trim();
+
+        let isCorrect = false;
+        let status = 'WRONG';
+
+        if (isTimeout) {
+          status = 'TIMEOUT';
+          // Check if partially entered code happened to be valid at timeout
+          if (trimmed.length > 0 && q.validator(trimmed)) {
+            isCorrect = true;
+            status = 'CORRECT';
+          }
+        } else if (isSkipped || trimmed.length === 0) {
+          status = 'UNANSWERED';
+        } else {
+          // Precise case-sensitive validation
+          isCorrect = q.validator(trimmed);
+          status = isCorrect ? 'CORRECT' : 'WRONG';
+        }
+
+        const pointsEarned = isCorrect ? this.config.pointsPerQ : 0;
+
+        // Record Answer Record
+        this.session.answers.push({
+          questionId: q.id,
+          questionTitle: q.title,
+          category: q.category,
+          submittedCode: trimmed,
+          referenceAnswer: q.referenceAnswer,
+          status: status,
+          points: pointsEarned,
+          submittedAt: new Date().toISOString()
+        });
+
+        // Advance to next question or finalize
+        this.session.currentIndex++;
+        if (this.session.currentIndex >= QUESTION_BANK.length) {
+          this.finalizeExam();
+        } else {
+          this.persistActiveSession();
+          // Brief 300ms transition for clean UI
+          setTimeout(() => {
+            this.setupCurrentQuestion();
+          }, 300);
+        }
+      }
+
+      async finalizeExam() {
+        clearInterval(this.timerInterval);
+        if (!this.session) return;
+
+        const answers = this.session.answers;
+        const correctCount = answers.filter(a => a.status === 'CORRECT').length;
+        const timeoutCount = answers.filter(a => a.status === 'TIMEOUT').length;
+        const unansweredCount = answers.filter(a => a.status === 'UNANSWERED').length;
+        const wrongCount = answers.filter(a => a.status === 'WRONG').length;
+
+        const totalScore = correctCount * this.config.pointsPerQ;
+        const completedAt = new Date().toISOString();
+
+        const finishedResult = {
+          attemptId: this.session.attemptId,
+          nama: this.session.nama,
+          nim: this.session.nim,
+          kelas: this.session.kelas,
+          startedAt: this.session.startedAt,
+          completedAt: completedAt,
+          durationSec: Math.round((new Date(completedAt) - new Date(this.session.startedAt)) / 1000),
+          totalQuestions: QUESTION_BANK.length,
+          correctCount: correctCount,
+          wrongCount: wrongCount,
+          timeoutCount: timeoutCount,
+          unansweredCount: unansweredCount,
+          score: totalScore,
+          accuracy: Math.round((correctCount / QUESTION_BANK.length) * 100),
+          answers: answers
+        };
+
+        // Simpan ke database MySQL dan cadangkan di localStorage
+        await this.saveFinalResult(finishedResult);
+
+        // Clear active session in progress
+        localStorage.removeItem(STORAGE_KEY_SESSION);
+        this.session = null;
+
+        // Render result scorecard view
+        this.renderResultView(finishedResult);
+        this.navigate('result');
+      }
+
+      async saveFinalResult(result) {
+        // Cadangkan di browser localStorage
+        const results = this.getStoredResults();
+        const existingIdx = results.findIndex(r => r.attemptId === result.attemptId);
+        if (existingIdx >= 0) {
+          results[existingIdx] = result;
+        } else {
+          results.push(result);
+        }
+        localStorage.setItem(STORAGE_KEY_RESULTS, JSON.stringify(results));
+
+        // Kirim dan simpan secara permanen ke MySQL
+        try {
+          const resp = await fetch('api/api.php?action=save_result', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(result)
+          });
+          const resData = await resp.json();
+          if (resData.success) {
+            this.showToast("Data nilai & identitas berhasil disimpan ke MySQL ujianbahasa_c!", "success");
+          } else {
+            console.error("Gagal simpan ke MySQL:", resData.message);
+            this.showToast("Peringatan: " + resData.message, "warning");
+          }
+        } catch (err) {
+          console.error("Koneksi ke MySQL API gagal:", err);
+          this.showToast("Penyimpanan lokal berhasil, namun gagal terhubung ke MySQL.", "warning");
+        }
+      }
+
+      getStoredResults() {
+        const raw = localStorage.getItem(STORAGE_KEY_RESULTS);
+        if (!raw) return [];
+        try { return JSON.parse(raw) || []; } catch(e) { return []; }
+      }
+
+      renderResultView(res) {
+        document.getElementById('resStudentName').textContent = res.nama;
+        document.getElementById('resStudentNimClass').textContent = `${res.nim} (${res.kelas})`;
+        document.getElementById('resTimestamp').textContent = new Date(res.completedAt).toLocaleString('id-ID');
+
+        document.getElementById('resultFinalScore').textContent = res.score;
+        document.getElementById('resCorrectCount').textContent = res.correctCount;
+        document.getElementById('resWrongCount').textContent = res.wrongCount;
+        document.getElementById('resTimeoutCount').textContent = res.timeoutCount;
+        document.getElementById('resAccuracy').textContent = `${res.accuracy}%`;
+
+        // Qualitative Grade Badge
+        const badge = document.getElementById('resultGradeBadge');
+        const iconSpan = document.getElementById('resultIcon');
+
+        if (res.score >= 80) {
+          badge.className = "badge bg-success px-3 py-2";
+          badge.textContent = "Sangat Baik (Lulus Sempurna)";
+          iconSpan.className = "d-inline-flex align-items-center justify-content-center rounded-circle p-3 bg-success-subtle text-success";
+        } else if (res.score >= 70) {
+          badge.className = "badge bg-primary px-3 py-2";
+          badge.textContent = "Baik (Kompeten)";
+          iconSpan.className = "d-inline-flex align-items-center justify-content-center rounded-circle p-3 bg-primary-subtle text-primary";
+        } else if (res.score >= 60) {
+          badge.className = "badge bg-warning text-dark px-3 py-2";
+          badge.textContent = "Cukup (Perlu Pemantapan)";
+          iconSpan.className = "d-inline-flex align-items-center justify-content-center rounded-circle p-3 bg-warning-subtle text-warning";
+        } else {
+          badge.className = "badge bg-danger px-3 py-2";
+          badge.textContent = "Perlu Belajar Lagi";
+          iconSpan.className = "d-inline-flex align-items-center justify-content-center rounded-circle p-3 bg-danger-subtle text-danger";
+        }
+
+        // Render Answer Review Section if allowed
+        const reviewContainer = document.getElementById('reviewContainer');
+        const reviewTableBody = document.getElementById('reviewTableBody');
+        reviewTableBody.innerHTML = '';
+
+        if (this.config.allowReview) {
+          reviewContainer.classList.remove('d-none');
+          res.answers.forEach((ans, idx) => {
+            const tr = document.createElement('tr');
+            
+            let statusBadge = '<span class="badge bg-danger">Salah</span>';
+            if (ans.status === 'CORRECT') statusBadge = '<span class="badge bg-success">Benar</span>';
+            else if (ans.status === 'TIMEOUT') statusBadge = '<span class="badge bg-warning text-dark">Waktu Habis</span>';
+            else if (ans.status === 'UNANSWERED') statusBadge = '<span class="badge bg-secondary">Kosong</span>';
+
+            tr.innerHTML = `
+              <td class="font-mono text-muted">${idx + 1}</td>
+              <td>
+                <div class="fw-semibold text-dark">${ans.questionTitle}</div>
+                <small class="text-muted">${ans.category}</small>
+              </td>
+              <td>
+                <code class="font-mono text-dark bg-light px-2 py-1 rounded d-block" style="max-width: 320px; overflow-x: auto;">
+                  ${ans.submittedCode ? this.escapeHtml(ans.submittedCode) : '<em class="text-muted">(Tidak ada jawaban)</em>'}
+                </code>
+              </td>
+              <td>${statusBadge}</td>
+              <td class="font-mono fw-bold">${ans.points}</td>
+            `;
+            reviewTableBody.appendChild(tr);
+          });
+        } else {
+          reviewContainer.classList.add('d-none');
+        }
+      }
+
+      async renderLeaderboardTable() {
+        const searchVal = (document.getElementById('leadSearchInput')?.value || '').toLowerCase().trim();
+        const classFilter = document.getElementById('leadClassFilter')?.value || '';
+
+        let results = [];
+        let stats = null;
+
+        try {
+          let url = `api/api.php?action=get_leaderboard&search=${encodeURIComponent(searchVal)}`;
+          if (classFilter) {
+            url += `&kelas=${encodeURIComponent(classFilter)}`;
+          }
+          const resp = await fetch(url);
+          const data = await resp.json();
+          if (data.success && data.data) {
+            results = data.data.list || [];
+            stats = data.data.stats;
+          }
+        } catch(e) {
+          console.warn("Koneksi MySQL API gagal, memuat dari penyimpanan lokal:", e);
+          const localResults = this.getStoredResults();
+          results = localResults.filter(item => {
+            const matchesSearch = !searchVal || 
+              (item.nama && item.nama.toLowerCase().includes(searchVal)) || 
+              (item.nim && item.nim.toLowerCase().includes(searchVal));
+            const matchesClass = !classFilter || item.kelas === classFilter;
+            return matchesSearch && matchesClass;
+          }).sort((a, b) => {
+            if (b.score !== a.score) return b.score - a.score;
+            return (a.durationSec || 0) - (b.durationSec || 0);
+          });
+        }
+
+        // Metrics Calculation
+        const total = stats ? stats.totalCount : results.length;
+        const scores = results.map(r => r.score);
+        const highScore = stats ? stats.highScore : (total > 0 ? Math.max(...scores) : 0);
+        const lowScore = stats ? stats.lowScore : (total > 0 ? Math.min(...scores) : 0);
+        const avgScore = stats ? stats.avgScore : (total > 0 ? Math.round(scores.reduce((a, b) => a + b, 0) / total) : 0);
+
+        document.getElementById('leadTotalCount').textContent = total;
+        document.getElementById('leadHighScore').textContent = highScore;
+        document.getElementById('leadAvgScore').textContent = avgScore;
+        document.getElementById('leadLowScore').textContent = lowScore;
+
+        const tbody = document.getElementById('leaderboardTbody');
+        const emptyState = document.getElementById('leaderboardEmptyState');
+        tbody.innerHTML = '';
+
+        if (results.length === 0) {
+          emptyState.classList.remove('d-none');
+          return;
+        }
+        emptyState.classList.add('d-none');
+
+        results.forEach((row, i) => {
+          const tr = document.createElement('tr');
+          
+          // Visual badges for Top 3
+          let rankBadge = `<span class="fw-bold font-mono text-muted">#${i + 1}</span>`;
+          if (i === 0) rankBadge = '<span class="badge bg-warning text-dark"><i class="bi bi-trophy-fill"></i> 1</span>';
+          else if (i === 1) rankBadge = '<span class="badge bg-secondary text-white"><i class="bi bi-award-fill"></i> 2</span>';
+          else if (i === 2) rankBadge = '<span class="badge bg-danger-subtle text-danger"><i class="bi bi-award-fill"></i> 3</span>';
+
+          const formattedTime = row.completedAt ? new Date(row.completedAt).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : '-';
+          const formattedDate = row.completedAt ? new Date(row.completedAt).toLocaleDateString('id-ID') : '-';
+
+          tr.innerHTML = `
+            <td class="text-center">${rankBadge}</td>
+            <td class="fw-semibold text-dark">${this.escapeHtml(row.nama)}</td>
+            <td class="font-mono text-secondary">${this.escapeHtml(row.nim)}</td>
+            <td><span class="badge bg-primary-subtle text-primary border border-primary-subtle font-mono">${this.escapeHtml(row.kelas)}</span></td>
+            <td class="text-center font-mono fw-bold fs-6 text-primary">${row.score}</td>
+            <td class="text-center font-mono fw-semibold text-success">${row.correctCount}</td>
+            <td class="text-center font-mono fw-semibold text-danger">${row.wrongCount}</td>
+            <td class="text-center font-mono fw-semibold text-warning">${row.timeoutCount}</td>
+            <td class="font-mono text-end text-muted small">${formattedTime} <span class="d-none d-lg-inline">(${formattedDate})</span></td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      async exportToExcel() {
+        if (typeof XLSX === 'undefined') {
+          this.showToast("Library SheetJS (XLSX) tidak terdeteksi. Pastikan koneksi internet aktif.", "danger");
+          return;
+        }
+
+        let results = [];
+        try {
+          const resp = await fetch('api/api.php?action=get_leaderboard&include_answers=1');
+          const data = await resp.json();
+          if (data.success && data.data && data.data.list) {
+            results = data.data.list;
+          }
+        } catch(e) {
+          console.warn("Gagal mengambil data lengkap dari MySQL, fallback ke penyimpanan lokal:", e);
+          results = this.getStoredResults();
+        }
+
+        if (results.length === 0) {
+          this.showToast("Belum ada data ujian yang dapat diekspor ke Excel.", "warning");
+          return;
+        }
+
+        // Sort descending by score
+        const sorted = [...results].sort((a, b) => b.score - a.score);
+
+        // --- SHEET 1: Leaderboard ---
+        const sheet1Data = [
+          ["LAPORAN HASIL UJIAN PRAKTIK PEMROGRAMAN C# DASAR"],
+          ["Database:", "ujianbahasa_c (MySQL)"],
+          ["Tanggal Ekspor:", new Date().toLocaleString('id-ID')],
+          ["Total Peserta:", sorted.length],
+          [], // empty spacer
+          ["Peringkat", "Nama Mahasiswa", "NIM", "Kelas", "Nilai Akhir", "Benar", "Salah", "Waktu Habis", "Tidak Dijawab", "Durasi (Detik)", "Waktu Selesai"]
+        ];
+
+        sorted.forEach((r, idx) => {
+          sheet1Data.push([
+            idx + 1,
+            r.nama,
+            r.nim,
+            r.kelas,
+            r.score,
+            r.correctCount,
+            r.wrongCount,
+            r.timeoutCount,
+            r.unansweredCount || 0,
+            r.durationSec || 0,
+            r.completedAt ? new Date(r.completedAt).toLocaleString('id-ID') : '-'
+          ]);
+        });
+
+        // --- SHEET 2: Rekapitulasi Statistik ---
+        const scores = sorted.map(r => r.score);
+        const total = sorted.length;
+        const highScore = Math.max(...scores);
+        const lowScore = Math.min(...scores);
+        const avgScore = (scores.reduce((a, b) => a + b, 0) / total).toFixed(2);
+        const perfectCount = scores.filter(s => s === 100).length;
+
+        const gradeSangatBaik = scores.filter(s => s >= 80).length;
+        const gradeBaik = scores.filter(s => s >= 70 && s < 80).length;
+        const gradeCukup = scores.filter(s => s >= 60 && s < 70).length;
+        const gradePerluBelajar = scores.filter(s => s < 60).length;
+
+        // Breakdown per Kelas TI-A, TI-B, TI-C
+        const countTIA = sorted.filter(s => s.kelas === 'TI-A').length;
+        const countTIB = sorted.filter(s => s.kelas === 'TI-B').length;
+        const countTIC = sorted.filter(s => s.kelas === 'TI-C').length;
+
+        const sheet2Data = [
+          ["RINGKASAN STATISTIK EVALUASI C# CODE CHALLENGE"],
+          ["Database:", "ujianbahasa_c (MySQL)"],
+          [],
+          ["Indikator", "Nilai"],
+          ["Total Mahasiswa Peserta", total],
+          ["Peserta Kelas TI-A", countTIA],
+          ["Peserta Kelas TI-B", countTIB],
+          ["Peserta Kelas TI-C", countTIC],
+          ["Nilai Tertinggi", highScore],
+          ["Nilai Terendah", lowScore],
+          ["Nilai Rata-rata Kelas", parseFloat(avgScore)],
+          ["Mahasiswa Nilai Sempurna (100)", perfectCount],
+          [],
+          ["Distribusi Kategori Kelulusan", "Jumlah Mahasiswa", "Persentase"],
+          ["Sangat Baik (80 - 100)", gradeSangatBaik, `${((gradeSangatBaik/total)*100).toFixed(1)}%`],
+          ["Baik (70 - 79)", gradeBaik, `${((gradeBaik/total)*100).toFixed(1)}%`],
+          ["Cukup (60 - 69)", gradeCukup, `${((gradeCukup/total)*100).toFixed(1)}%`],
+          ["Perlu Belajar Lagi (0 - 59)", gradePerluBelajar, `${((gradePerluBelajar/total)*100).toFixed(1)}%`]
+        ];
+
+        // --- SHEET 3: Detail Analisis Butir Soal ---
+        const sheet3Data = [
+          ["ANALISIS BUTIR SOAL MAHASISWA"],
+          [],
+          ["Nama", "NIM", "Kelas", "Nomor Soal", "Kategori Soal", "Status Jawaban", "Poin Diperoleh", "Kode Jawaban"]
+        ];
+
+        sorted.forEach(r => {
+          if (r.answers && Array.isArray(r.answers)) {
+            r.answers.forEach(a => {
+              sheet3Data.push([
+                r.nama,
+                r.nim,
+                r.kelas,
+                a.questionId,
+                a.category,
+                a.status,
+                a.points,
+                a.submittedCode || ""
+              ]);
+            });
+          }
+        });
+
+        // Assemble Workbook
+        const wb = XLSX.utils.book_new();
+        const ws1 = XLSX.utils.aoa_to_sheet(sheet1Data);
+        const ws2 = XLSX.utils.aoa_to_sheet(sheet2Data);
+        const ws3 = XLSX.utils.aoa_to_sheet(sheet3Data);
+
+        XLSX.utils.book_append_sheet(wb, ws1, "Leaderboard");
+        XLSX.utils.book_append_sheet(wb, ws2, "Rekapitulasi");
+        XLSX.utils.book_append_sheet(wb, ws3, "Detail Jawaban");
+
+        // Generate dynamic file name
+        const todayStr = new Date().toISOString().split('T')[0];
+        const fileName = `Leaderboard_CSharp_MySQL_${todayStr}.xlsx`;
+
+        // Write genuine binary xlsx
+        XLSX.writeFile(wb, fileName);
+        this.showToast(`Berkas ${fileName} berhasil diekspor dari MySQL!`, "success");
+      }
+
+      populateAdminQuestionSelector() {
+        const select = document.getElementById('testQuestionSelect');
+        if (!select) return;
+        select.innerHTML = '';
+        QUESTION_BANK.forEach(q => {
+          const opt = document.createElement('option');
+          opt.value = q.id;
+          opt.textContent = `Soal ${q.id}: ${q.title} (${q.category})`;
+          select.appendChild(opt);
+        });
+        this.loadQuestionForTesting();
+      }
+
+      loadQuestionForTesting() {
+        const qId = parseInt(document.getElementById('testQuestionSelect').value) || 1;
+        const q = QUESTION_BANK.find(item => item.id === qId);
+        if (!q) return;
+
+        document.getElementById('testQuestionText').textContent = q.instruction;
+        document.getElementById('testReferenceCode').textContent = q.referenceAnswer;
+        document.getElementById('testInputCode').value = '';
+        document.getElementById('testResultBox').classList.add('d-none');
+      }
+
+      setTestInputReference() {
+        const qId = parseInt(document.getElementById('testQuestionSelect').value) || 1;
+        const q = QUESTION_BANK.find(item => item.id === qId);
+        if (q) {
+          document.getElementById('testInputCode').value = q.referenceAnswer;
+        }
+      }
+
+      setTestInputWrongCase() {
+        const qId = parseInt(document.getElementById('testQuestionSelect').value) || 1;
+        const q = QUESTION_BANK.find(item => item.id === qId);
+        if (q) {
+          // Intentionally flip cases to prove case sensitivity
+          const wrong = q.referenceAnswer.toLowerCase();
+          document.getElementById('testInputCode').value = wrong;
+        }
+      }
+
+      executeValidatorTest() {
+        const qId = parseInt(document.getElementById('testQuestionSelect').value) || 1;
+        const q = QUESTION_BANK.find(item => item.id === qId);
+        const input = document.getElementById('testInputCode').value;
+        const resBox = document.getElementById('testResultBox');
+
+        if (!q) return;
+
+        const isPassed = q.validator(input);
+        resBox.classList.remove('d-none');
+
+        if (isPassed) {
+          resBox.className = "p-3 rounded-3 border small font-mono bg-success-subtle text-success border-success";
+          resBox.innerHTML = `
+            <strong><i class="bi bi-check-circle-fill me-1"></i> VALID (LULUS):</strong> Jawaban memenuhi aturan sintaks & kapitalisasi C# (+${this.config.pointsPerQ} Poin).
+          `;
+        } else {
+          resBox.className = "p-3 rounded-3 border small font-mono bg-danger-subtle text-danger border-danger";
+          resBox.innerHTML = `
+            <strong><i class="bi bi-x-circle-fill me-1"></i> INVALID (DITOLAK):</strong> Jawaban tidak cocok dengan validator atau salah penulisan huruf besar/kecil (0 Poin).
+          `;
+        }
+      }
+
+      async resetAllData() {
+        const confirmed = window.confirm("PERINGATAN: Apakah Anda yakin ingin menghapus seluruh riwayat ujian dan leaderboard di database MySQL (ujianbahasa_c)? Tindakan ini tidak dapat dibatalkan.");
+        if (!confirmed) return;
+
+        try {
+          const resp = await fetch('api/api.php?action=reset_data', { method: 'POST' });
+          const res = await resp.json();
+          if (res.success) {
+            localStorage.removeItem(STORAGE_KEY_RESULTS);
+            localStorage.removeItem(STORAGE_KEY_SESSION);
+            this.session = null;
+            await this.renderLeaderboardTable();
+            this.showToast("Seluruh data di database MySQL telah dikosongkan.", "warning");
+            return;
+          }
+        } catch(e) {
+          console.error("Gagal reset via API:", e);
+        }
+
+        localStorage.removeItem(STORAGE_KEY_RESULTS);
+        localStorage.removeItem(STORAGE_KEY_SESSION);
+        this.session = null;
+        await this.renderLeaderboardTable();
+        this.showToast("Seluruh data riwayat ujian telah dikosongkan.", "warning");
+      }
+
+      async seedDemoData() {
+        try {
+          const resp = await fetch('api/api.php?action=seed_data', { method: 'POST' });
+          const res = await resp.json();
+          if (res.success) {
+            await this.renderLeaderboardTable();
+            this.showToast(res.message, "success");
+            return;
+          }
+        } catch(e) {
+          console.error("Gagal seed via MySQL API, fallback ke lokal:", e);
+        }
+
+        const demoData = [
+          {
+            attemptId: "att_demo_01",
+            nama: "Ahmad Rizky Pratama",
+            nim: "230101001",
+            kelas: "TI-A",
+            startedAt: new Date(Date.now() - 3600000).toISOString(),
+            completedAt: new Date(Date.now() - 3000000).toISOString(),
+            durationSec: 540,
+            totalQuestions: 20,
+            correctCount: 20,
+            wrongCount: 0,
+            timeoutCount: 0,
+            unansweredCount: 0,
+            score: 100,
+            accuracy: 100,
+            answers: []
+          },
+          {
+            attemptId: "att_demo_02",
+            nama: "Siti Nurhaliza",
+            nim: "230101015",
+            kelas: "TI-B",
+            startedAt: new Date(Date.now() - 7200000).toISOString(),
+            completedAt: new Date(Date.now() - 6600000).toISOString(),
+            durationSec: 580,
+            totalQuestions: 20,
+            correctCount: 18,
+            wrongCount: 2,
+            timeoutCount: 0,
+            unansweredCount: 0,
+            score: 90,
+            accuracy: 90,
+            answers: []
+          },
+          {
+            attemptId: "att_demo_03",
+            nama: "Dimas Anggara",
+            nim: "230101028",
+            kelas: "TI-C",
+            startedAt: new Date(Date.now() - 10800000).toISOString(),
+            completedAt: new Date(Date.now() - 10200000).toISOString(),
+            durationSec: 600,
+            totalQuestions: 20,
+            correctCount: 15,
+            wrongCount: 3,
+            timeoutCount: 2,
+            unansweredCount: 0,
+            score: 75,
+            accuracy: 75,
+            answers: []
+          }
+        ];
+
+        localStorage.setItem(STORAGE_KEY_RESULTS, JSON.stringify(demoData));
+        await this.renderLeaderboardTable();
+        this.showToast("Data sampel mahasiswa berhasil dimuat ke sistem!", "success");
+      }
+
+      showToast(msg, type = "info") {
+        const toastEl = document.getElementById('appToast');
+        const msgEl = document.getElementById('toastMessage');
+        if (!toastEl || !msgEl || !window.bootstrap) return;
+
+        toastEl.className = `toast align-items-center text-white bg-${type === 'danger' ? 'danger' : (type === 'success' ? 'success' : (type === 'warning' ? 'warning text-dark' : 'dark'))} border-0 shadow`;
+        msgEl.innerHTML = `<i class="bi bi-info-circle-fill me-1"></i> ${msg}`;
+
+        const toast = new bootstrap.Toast(toastEl, { delay: 3500 });
+        toast.show();
+      }
+
+      escapeHtml(str) {
+        if (!str) return '';
+        return str
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+    }
+
+    // Initialize application instance on DOM Ready
+    let app;
+    window.addEventListener('DOMContentLoaded', () => {
+      app = new ExamApp();
+      app.init();
+    });
+  </script>
+
+</body>
+</html>
